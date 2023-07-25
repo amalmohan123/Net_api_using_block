@@ -1,14 +1,16 @@
 import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/core/failures/main_failures.dart';
 import '../../domain/hot_and_new/hot_and_new_service.dart';
 import '../../domain/hot_and_new/model/hot_and_new_res.dart';
+
+
 part 'hot_and_new_event.dart';
 part 'hot_and_new_state.dart';
 part 'hot_and_new_bloc.freezed.dart';
-
 
 @injectable
 class HotAndNewBloc extends Bloc<HotAndNewEvent, HotAndNewState> {
@@ -56,6 +58,7 @@ class HotAndNewBloc extends Bloc<HotAndNewEvent, HotAndNewState> {
           hasError: false,
         ),
       );
+
       //get data from remote
       final _result = await _hotAndNewService.getHotAndNewTvData();
       //data to state

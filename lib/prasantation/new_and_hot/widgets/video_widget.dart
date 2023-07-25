@@ -23,8 +23,8 @@ class VideoWidget extends StatelessWidget {
               Icons.error_outline,
               color: Colors.red,
             )),
-            loadingBuilder: (context, child, loadingProgress) =>
-                Center(child: CircularProgressIndicator()),
+            // loadingBuilder: (context, child, loadingProgress) =>
+            //     Center(child: CircularProgressIndicator()),
           ),
         ),
         Positioned(

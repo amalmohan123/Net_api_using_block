@@ -1,97 +1,199 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix_api/core/colors.dart';
 import 'package:netflix_api/core/constants.dart';
 import 'package:netflix_api/prasantation/home/widgets/background_card.dart';
-
+import 'package:netflix_api/prasantation/home/widgets/number_title-card.dart';
+import '../../application/home_page/home_page_bloc.dart';
 import '../widgets/main_title_card.dart';
-import 'widgets/number_title-card.dart';
-
-const mainImage = 'assets/images/home_screen/pic-7.jpg';
 
 ValueNotifier<bool> scrollNotifier = ValueNotifier(true);
 
 class ScreenHome extends StatelessWidget {
-  const ScreenHome({super.key});
+  ScreenHome({super.key});
+  int shuffleCount = 1;
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<HomePageBloc>(context).add(const GetHomeScreenData());
+    });
     return Scaffold(
-      body: ValueListenableBuilder(
-        valueListenable: scrollNotifier,
-        builder: (BuildContext context, index, _) {
-          return NotificationListener<UserScrollNotification>(
-            onNotification: (notification) {
-              final ScrollDirection direction = notification.direction;
-              if (direction == ScrollDirection.reverse) {
-                scrollNotifier.value = false;
-              } else if (direction == ScrollDirection.forward) {
-                scrollNotifier.value = true;
-              }
-              return true;
-            },
-            child: Stack(
-              children: [
-                ListView(
-                  children: const [
-                    BackGroundCard(),
-                    khight,
-                    MainTitleCard(title: 'Released in the Past Year'),
-                    khight,
-                    MainTitleCard(title: 'Trending Now'),
-                 khight,
-                    NumberTitleCard(),
-                    khight,
-                    MainTitleCard(title: 'Tense Dramas'),
-                    khight,
-                    MainTitleCard(title: 'South Indian Cinema'),
-                  ],
-                ),
-                scrollNotifier.value == true
-                    ? AnimatedContainer(
-                      duration: const Duration(milliseconds: 1000),
-                        width: double.infinity,
-                        height: 90,
-                        color: Colors.black.withOpacity(0.1),
-                        child: Column(
+      body: SafeArea(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+            child: ValueListenableBuilder(
+              valueListenable: scrollNotifier,
+              builder: (context, index, _) {
+                return NotificationListener<UserScrollNotification>(
+                  onNotification: ((notification) {
+                    final ScrollDirection direction = notification.direction;
+                    if (direction == ScrollDirection.reverse) {
+                      scrollNotifier.value = false;
+                    } else if (direction == ScrollDirection.forward) {
+                      scrollNotifier.value = true;
+                    }
+                    return true;
+                  }),
+                  child: Stack(children: [
+                    BlocBuilder<HomePageBloc, HomePageState>(
+                      builder: (context, state) {
+                        if (state.isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          );
+                        } else if (state.hasError) {
+                          return const Text('Error while getting data');
+                        }
+                        //released in the past year
+                        final _releasedPastYear =
+                            state.pastYearMovieList.map((m) {
+                          return '$imageAppendUrl${m.posterPath}';
+                        }).toList();
+                         _releasedPastYear.shuffle();
+
+                        //trending Now
+                        final _trendingNow = state.trendingTvList.map((m) {
+                          return '$imageAppendUrl${m.posterPath}';
+                        }).toList();
+
+                        // top 10 tv shows in india today
+                        final _topTenTvshow = state.trendingMovieList.map((m) {
+                          return '$imageAppendUrl${m.posterPath}';
+                        }).toList();
+
+                        //top10Movies
+                        final _top10TvShow = state.trendingTvList.map((t) {
+                          return '$imageAppendUrl${t.posterPath}';
+                        }).toList();
+                        // _top10TvShow.shuffle();
+
+                        // if (shuffleCount <= 1) {
+                        //   _southIndianCinema.shuffle();
+                        //   shuffleCount = shuffleCount + 1;
+                        // }
+
+                        //tensedrama
+                        final _tenseDrama = state.tenseDramasMovieList.map((m) {
+                          return '$imageAppendUrl${m.posterPath}';
+                        }).toList();
+
+                        //south India Cinema
+                        final _southIndianCinema =
+                            state.trendingTvList.map((m) {
+                          return '$imageAppendUrl${m.posterPath}';
+                        }).toList();
+                        _southIndianCinema.shuffle();
+
+                        //ListView
+                        return ListView(
                           children: [
-                            Row(
+                            BackGroundCard(
+                              bgUrl: _topTenTvshow,
+                            ),
+                            MainTitleCard(
+                              title: 'Released in The Past Year ',
+                              posterList: _releasedPastYear,
+                            ),
+                            MainTitleCard(
+                                title: 'Trending Now',
+                                posterList: _trendingNow),
+
+                            //seperated
+                            NumberTitleCard(
+                              posterList: _top10TvShow,
+                            ),
+
+                            MainTitleCard(
+                                title: 'Tense Dramas', posterList: _tenseDrama),
+                            MainTitleCard(
+                                title: 'South Indian Cinema',
+                                posterList: _southIndianCinema),
+                          ],
+                        );
+                      },
+                    ),
+                    scrollNotifier.value
+                        ? AnimatedContainer(
+                            duration: const Duration(milliseconds: 2000),
+                            width: double.infinity,
+                            height: 90,
+                            color: Colors.black.withOpacity(0.1),
+                            child: Column(
                               children: [
-                                Image.asset(
-                                  'assets/images/home_screen/logo.png',
-                                  height: 60,
-                                  width: 60,
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Image.network(
+                                        'https://assets.stickpng.com/thumbs/629764e87ec76b82fb21fce6.png',
+                                        width: 50,
+                                        fit: BoxFit.cover,
+                                        scale: 5.0,
+                                        height: 50,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    const Icon(
+                                      Icons.cast,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    kwidth,
+                                    Opacity(
+                                      opacity: 0.7,
+                                      child: Container(
+                                        height: 30,
+                                        width: 30,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.blue,
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                    'https://static-cdn.jtvnw.net/jtv_user_pictures/1d8af5f8-03f8-4abb-ba09-93bcfe6895f6-profile_image-70x70.png'))),
+                                      ),
+                                    ),
+                                    kwidth,
+                                  ],
                                 ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.cast,
-                                  color: Colors.white,
-                                ),
-                            const    SizedBox(width: 15),
-                                Container(
-                                  height: 25,
-                                  width: 25,
-                                  color: Colors.blue,
-                                ),
-                              const  SizedBox(width: 15),
+                                const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Tv Shows',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text('Movies',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                    Row(
+                                      children: [
+                                        Text('Categories',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
+                                        Icon(
+                                          Icons.arrow_drop_down_sharp,
+                                          color: whiteColor,
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                )
                               ],
                             ),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text('TV Shows',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                                Text('Movies',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                                Text('Categories',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
-                              ],
-                            )
-                          ],
-                        ),
-                      )
-                    : khight
-              ],
-            ),
-          );
-        },
+                          )
+                        : const Text(''),
+                  ]),
+                );
+              },
+            )),
       ),
     );
   }

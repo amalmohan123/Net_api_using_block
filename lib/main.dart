@@ -6,16 +6,8 @@ import 'package:netflix_api/application/fast_laugh/fast_laugh_bloc.dart';
 import 'package:netflix_api/application/search/search_bloc.dart';
 import 'package:netflix_api/domain/core/di/injectable.dart';
 import 'package:netflix_api/prasantation/main_page/screen_main_page.dart';
-
+import 'application/home_page/home_page_bloc.dart';
 import 'application/hot_and_New/hot_and_new_bloc.dart';
-
-
-
-
-
-
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (ctx) => getIt<SearchBloc>()),
           BlocProvider(create: (ctx) => getIt<FastLaughBloc>()),
           BlocProvider(create: (ctx) => getIt<HotAndNewBloc>()),
+           BlocProvider(create: (ctx) => getIt<HomePageBloc>()),   
       ],
       child: MaterialApp(
         title: 'Netflix_api',

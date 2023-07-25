@@ -6,7 +6,9 @@ import 'package:netflix_api/prasantation/widgets/main_tittle.dart';
 class NumberTitleCard extends StatelessWidget {
   const NumberTitleCard({
     super.key,
+    required this.posterList
   });
+  final List<String>posterList;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,11 @@ class NumberTitleCard extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: List.generate(
-              10,
+              posterList.length,
               (index) {
                 return NumberCard(
                   index: index,
+                  imageUrl:  posterList[index],
                 );
               },
             ),

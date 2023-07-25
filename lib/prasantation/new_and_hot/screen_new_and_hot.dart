@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:netflix_api/core/colors.dart';
 import 'package:netflix_api/prasantation/new_and_hot/widgets/coming_soon.dart';
 import 'package:netflix_api/prasantation/new_and_hot/widgets/everyone_watching.dart';
-import '../../application/hot_and_New/hot_and_new_bloc.dart';
+
+import '../../application/hot_and_new/hot_and_new_bloc.dart';
+
 import '../../core/constants.dart';
 
 
@@ -92,7 +94,7 @@ class EveryOnesWatchingList extends StatelessWidget {
         BlocProvider.of<HotAndNewBloc>(context)
           .add(const LoadDataInEveryOnesWatching());
       },
-      child: BlocBuilder<HotAndNewBloc, HotAndNewState>(
+      child: BlocBuilder<HotAndNewBloc,HotAndNewState>(
         builder: (context, state) {
           if (state.isLoading) {
             return const Center(

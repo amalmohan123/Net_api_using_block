@@ -32,7 +32,7 @@ class EveryonesWatching extends StatelessWidget {
         ),
         khight,
         Text(
-          description,
+          description, 
           maxLines: 6,
           style: const TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey),
